@@ -1,7 +1,11 @@
 import Head from 'next/head'
+import { useRecoilValue } from 'recoil'
+import { modalState, movieState } from '../atoms/modalAtom'
 import Banner from '../components/Banner'
 import Header from '../components/Header'
+import Modal_Index from '../components/Modal'
 import Row from '../components/Row'
+import useAuth from '../hooks/userAuth'
 import { Movie } from '../typings'
 import requests from '../utils/requests'
 
@@ -26,11 +30,20 @@ const Home = ({
     topRated,
     trendingNow,
 }: Props) => {
-    console.log(trendingNow)
+    const { loading } = useAuth()
+    const showModal = useRecoilValue(modalState)
+    const movie = useRecoilValue(movieState)
+
+    // console.log('index - movie', movie)
+
+    if (loading) return null
+
     return (
         <div className="relative h-screen bg-gradient-to-b lg:h-[140vh]">
             <Head>
-                <title>Home - JCBLE</title>
+                <title>
+                    {movie?.title || movie?.original_name || 'Home'} - Netflix
+                </title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
@@ -42,9 +55,12 @@ const Home = ({
                     <Row title="Action Movies" movies={actionMovies} />
                     <Row title="Horror Movies" movies={horrorMovies} />
                     <Row title="Romance Movies" movies={romanceMovies} />
+                    <Row title="Comedies" movies={comedyMovies} />
+                    <Row title="Documentaries" movies={documentaries} />
                 </section>
             </main>
             {/* Modal */}
+            {showModal && <Modal_Index />}
         </div>
     )
 }
